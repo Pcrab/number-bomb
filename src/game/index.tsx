@@ -57,31 +57,53 @@ const Game = () => {
 	for (let i = MIN; i <= MAX; i++) numbers.push(i);
 
 	return (
-		<div className="flex flex-col gap-15px items-center max-w-90vw">
+		<div className="flex flex-col gap-20px items-center max-w-95vw">
+			<div className="flex flex-wrap gap-20px justify-center">
+				{players.map((p, i) => {
+					const isCurrent = !gameOver && p === currentPlayer;
+					const isLoser = gameOver && p === loser;
+					return (
+						<div
+							key={p}
+							className={`px-12px py-4px rounded-full font-bold text-lg transition-all ${
+								isLoser
+									? "bg-red-500 text-white shadow-lg"
+									: isCurrent
+										? "bg-red-100 text-red-700 ring-2 ring-red-400 scale-110"
+										: "bg-gray-100 text-gray-600"
+							}`}
+						>
+							<span className="text-gray-400 mr-4px">{i + 1}.</span>
+							{p}
+						</div>
+					);
+				})}
+			</div>
+
 			{gameOver ? (
-				<div className="text-center text-red-600 font-bold text-xl">
+				<div className="text-center text-red-600 font-bold text-3xl">
 					💥 砰！{loser} 被炸飞啦！
 				</div>
 			) : low === high ? (
-				<div className="text-center text-xl">
+				<div className="text-center text-2xl">
 					轮到倒霉蛋 <span className="font-bold">{currentPlayer}</span> 啦
 				</div>
 			) : (
-				<div className="text-center text-xl">
-					轮到 <span className="font-bold">{currentPlayer}</span> 出手, 安全范围{" "}
-					<span className="font-bold">
+				<div className="text-center text-2xl">
+					轮到 <span className="font-bold">{currentPlayer}</span> 出手,安全范围{" "}
+					<span className="font-bold text-red-600 text-3xl">
 						{low} ~ {high}
 					</span>
 				</div>
 			)}
 
-			<div className="grid grid-cols-10 gap-5px">
+			<div className="grid grid-cols-10 gap-6px">
 				{numbers.map((n) => {
 					const outOfRange = n < low || n > high;
 					const isBomb = (gameOver || DEBUG) && n === bomb;
 
 					let cls =
-						"w-40px h-40px rounded font-bold flex items-center justify-center transition-colors";
+						"w-64px h-64px rounded-md font-bold text-2xl flex items-center justify-center transition-colors";
 					if (isBomb) {
 						cls += " bg-red-500 text-white";
 					} else if (outOfRange) {

@@ -11,7 +11,6 @@ createRoot(document.getElementById("root")!).render(
                         html,body,#root {
                                 width: 100dvw;
                                 height: 100dvh;
-                                overflow: hidden;
                         }
                         #root {
                                 display: flex;
