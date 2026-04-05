@@ -21,7 +21,9 @@ function App() {
 			}}
 		>
 			<div className="py-40px px-20px">
-				<h1 className="font-bold text-center text-2xl mb-20px">数字炸弹</h1>
+				<h1 className="font-bold text-center text-3xl mb-30px tracking-wider">
+					💣 数字炸弹
+				</h1>
 				{!!(scene === Scene.START) && <Start />}
 				{!!(scene === Scene.SELECT_PLAYER) && <SelectPlayer />}
 				{!!(scene === Scene.GAME) && <Game />}

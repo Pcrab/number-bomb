@@ -109,14 +109,14 @@ const Game = () => {
 				<button
 					type="button"
 					onClick={initGame}
-					className="px-10px py-5px rounded bg-gray-200 font-bold hover:bg-gray-500 hover:text-gray-100 cursor-pointer"
+					className="px-20px py-8px rounded-full bg-red-500 text-white font-bold shadow hover:bg-red-600 hover:shadow-lg cursor-pointer transition-all"
 				>
 					再来一局
 				</button>
 				<button
 					type="button"
 					onClick={() => setScene(Scene.SELECT_PLAYER)}
-					className="px-10px py-5px rounded bg-gray-200 font-bold hover:bg-gray-500 hover:text-gray-100 cursor-pointer"
+					className="px-20px py-8px rounded-full bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 cursor-pointer transition-colors"
 				>
 					返回玩家设置
 				</button>
