@@ -63,13 +63,15 @@ const Game = () => {
 					💥 砰！{loser} 被炸飞啦！
 				</div>
 			) : low === high ? (
-				<div className="text-center text-lg">
+				<div className="text-center text-xl">
 					轮到倒霉蛋 <span className="font-bold">{currentPlayer}</span> 啦
 				</div>
 			) : (
-				<div className="text-center text-lg">
+				<div className="text-center text-xl">
 					轮到 <span className="font-bold">{currentPlayer}</span> 出手, 安全范围{" "}
-					{low} ~ {high}
+					<span className="font-bold">
+						{low} ~ {high}
+					</span>
 				</div>
 			)}
 

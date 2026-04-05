@@ -56,10 +56,108 @@ const Sortable = ({ id, index }: { id: string; index: number }) => {
 	);
 };
 
+const ManagePanel = ({
+	suggestions,
+	onAdd,
+	onRemove,
+	onClose,
+}: {
+	suggestions: string[];
+	onAdd: (name: string) => boolean;
+	onRemove: (name: string) => void;
+	onClose: () => void;
+}) => {
+	const [input, setInput] = useState("");
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const submit = () => {
+		const name = input.trim();
+		if (!name) return;
+		if (onAdd(name)) {
+			setInput("");
+			inputRef.current?.focus();
+		}
+	};
+
+	return (
+		<div
+			className="fixed inset-0 bg-black/40 flex items-center justify-center z-10"
+			onClick={onClose}
+			onKeyDown={(e) => {
+				if (e.key === "Escape") onClose();
+			}}
+		>
+			<div
+				className="bg-white rounded-md shadow-xl p-20px w-320px h-50dvh flex flex-col"
+				onClick={(e) => e.stopPropagation()}
+				onKeyDown={(e) => e.stopPropagation()}
+			>
+				<div className="flex items-center justify-between mb-15px">
+					<div className="font-bold text-lg">常用玩家管理</div>
+					<button
+						type="button"
+						onClick={onClose}
+						className="cursor-pointer text-gray-400 hover:text-gray-700 text-xl leading-none bg-transparent"
+					>
+						×
+					</button>
+				</div>
+				<form
+					className="flex gap-5px mb-15px"
+					onSubmit={(e) => {
+						e.preventDefault();
+						submit();
+					}}
+				>
+					<input
+						ref={inputRef}
+						value={input}
+						onChange={(e) => setInput(e.target.value)}
+						placeholder="新增常用玩家"
+						className="flex-1 min-w-0 py-5px px-10px outline-none border-2px border-solid border-gray-300 focus:border-red-500 rounded-md transition-colors"
+					/>
+					<button
+						type="submit"
+						className="px-15px rounded-md bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 cursor-pointer transition-colors"
+					>
+						新增
+					</button>
+				</form>
+				<div className="flex-1 overflow-y-auto max-h-40dvh">
+					{suggestions.length === 0 ? (
+						<div className="text-center text-gray-400 py-20px">
+							暂无常用玩家
+						</div>
+					) : (
+						<div className="flex flex-col gap-5px">
+							{suggestions.map((name) => (
+								<div
+									key={name}
+									className="flex items-center justify-between px-10px py-5px rounded-md bg-gray-50"
+								>
+									<div className="font-bold">{name}</div>
+									<button
+										type="button"
+										onClick={() => onRemove(name)}
+										className="cursor-pointer bg-red-100 text-red-700 px-10px py-2px rounded hover:bg-red-500 hover:text-white font-bold text-sm transition-colors"
+									>
+										删除
+									</button>
+								</div>
+							))}
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+};
+
 const SelectPlayer = () => {
 	const { setScene, players, setPlayers } = useContext(GameContext);
 	const [newPlayer, setNewPlayer] = useState("");
 	const [suggestions, setSuggestions] = useState<string[]>([]);
+	const [manageOpen, setManageOpen] = useState(false);
 
 	const newPlayerRef = useRef<HTMLInputElement>(null);
 
@@ -94,20 +192,27 @@ const SelectPlayer = () => {
 		});
 	}, []);
 
-	const toggleQuickAdd = useCallback(
-		(name: string) => {
-			if (players.includes(name)) {
-				setPlayers(players.filter((p) => p !== name));
-			} else {
-				setPlayers([...players, name]);
-			}
-		},
-		[players, setPlayers],
-	);
+	const addSuggestion = useCallback((name: string) => {
+		let added = false;
+		setSuggestions((prev) => {
+			if (prev.includes(name)) return prev;
+			added = true;
+			const next = [...prev, name];
+			saveSuggestions(next);
+			return next;
+		});
+		return added;
+	}, []);
 
 	return (
-		<div className="w-320px">
-			<div className="flex gap-5px">
+		<div className="w-320px h-40dvh">
+			<form
+				className="flex gap-5px"
+				onSubmit={(e) => {
+					e.preventDefault();
+					addPlayer();
+				}}
+			>
 				<input
 					list="player-names"
 					ref={newPlayerRef}
@@ -124,53 +229,21 @@ const SelectPlayer = () => {
 						))}
 				</datalist>
 				<button
-					type="button"
-					onClick={() => {
-						addPlayer();
-					}}
+					type="submit"
 					className="px-15px rounded-md bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 cursor-pointer transition-colors"
 				>
 					添加
 				</button>
+			</form>
+			<div className="mt-5px text-right">
+				<button
+					type="button"
+					onClick={() => setManageOpen(true)}
+					className="cursor-pointer text-xs text-gray-500 hover:text-red-600 bg-transparent"
+				>
+					管理常用玩家
+				</button>
 			</div>
-			{suggestions.length > 0 && (
-				<div className="mt-10px">
-					<div className="text-sm text-gray-500 mb-5px">
-						常用玩家(点击加入或移出)
-					</div>
-					<div className="flex flex-wrap gap-5px">
-						{suggestions.map((name) => {
-							const active = players.includes(name);
-							return (
-								<div
-									key={name}
-									className={`flex items-center gap-3px rounded-md pl-8px transition-colors ${
-										active ? "bg-blue-100" : "bg-gray-50 hover:bg-blue-50"
-									}`}
-								>
-									<button
-										type="button"
-										onClick={() => toggleQuickAdd(name)}
-										className={`cursor-pointer py-2px font-bold bg-transparent ${
-											active ? "text-blue-700" : ""
-										}`}
-									>
-										{name}
-									</button>
-									<button
-										type="button"
-										onClick={() => removeSuggestion(name)}
-										title="从常用列表移除"
-										className="cursor-pointer px-5px py-2px text-gray-400 bg-transparent hover:text-red-600"
-									>
-										×
-									</button>
-								</div>
-							);
-						})}
-					</div>
-				</div>
-			)}
 			<DragDropProvider
 				onDragEnd={(e) => {
 					const newPlayers = move(players, e);
@@ -178,7 +251,7 @@ const SelectPlayer = () => {
 				}}
 				modifiers={[]}
 			>
-				<div className="flex flex-col gap-10px mt-10px min-h-40px">
+				<div className="flex flex-col gap-10px mt-10px max-h-40dvh overflow-y-auto pr-5px">
 					{players.map((player, index) => {
 						return <Sortable key={player} id={player} index={index} />;
 					})}
@@ -194,6 +267,14 @@ const SelectPlayer = () => {
 			>
 				开始游戏
 			</button>
+			{manageOpen && (
+				<ManagePanel
+					suggestions={suggestions}
+					onAdd={addSuggestion}
+					onRemove={removeSuggestion}
+					onClose={() => setManageOpen(false)}
+				/>
+			)}
 		</div>
 	);
 };
