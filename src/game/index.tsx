@@ -57,15 +57,15 @@ const Game = () => {
 	for (let i = MIN; i <= MAX; i++) numbers.push(i);
 
 	return (
-		<div className="flex flex-col gap-20px items-center max-w-95vw">
-			<div className="flex flex-wrap gap-20px justify-center">
+		<div className="flex flex-col gap-15px sm:gap-20px items-center w-95vw max-w-700px">
+			<div className="flex flex-wrap gap-8px sm:gap-15px justify-center">
 				{players.map((p, i) => {
 					const isCurrent = !gameOver && p === currentPlayer;
 					const isLoser = gameOver && p === loser;
 					return (
 						<div
 							key={p}
-							className={`px-12px py-4px rounded-full font-bold text-lg transition-all ${
+							className={`px-10px py-3px rounded-full font-bold text-sm sm:text-lg transition-all ${
 								isLoser
 									? "bg-red-500 text-white shadow-lg"
 									: isCurrent
@@ -81,29 +81,32 @@ const Game = () => {
 			</div>
 
 			{gameOver ? (
-				<div className="text-center text-red-600 font-bold text-3xl">
+				<div className="text-center text-red-600 font-bold text-2xl sm:text-3xl">
 					💥 砰！{loser} 被炸飞啦！
 				</div>
 			) : low === high ? (
-				<div className="text-center text-2xl">
+				<div className="text-center text-xl sm:text-2xl">
 					轮到倒霉蛋 <span className="font-bold">{currentPlayer}</span> 啦
 				</div>
 			) : (
-				<div className="text-center text-2xl">
-					轮到 <span className="font-bold">{currentPlayer}</span> 出手,安全范围{" "}
-					<span className="font-bold text-red-600 text-3xl">
+				<div className="text-center text-xl sm:text-2xl leading-tight">
+					轮到 <span className="font-bold">{currentPlayer}</span> 出手
+					<br className="sm:hidden" />
+					<span className="hidden sm:inline">,</span>
+					安全范围{" "}
+					<span className="font-bold text-red-600 text-2xl sm:text-3xl">
 						{low} ~ {high}
 					</span>
 				</div>
 			)}
 
-			<div className="grid grid-cols-10 gap-6px">
+			<div className="grid grid-cols-10 gap-4px sm:gap-6px w-full">
 				{numbers.map((n) => {
 					const outOfRange = n < low || n > high;
 					const isBomb = (gameOver || DEBUG) && n === bomb;
 
 					let cls =
-						"w-64px h-64px rounded-md font-bold text-2xl flex items-center justify-center transition-colors";
+						"w-full aspect-square rounded-md font-bold text-sm sm:text-2xl flex items-center justify-center transition-colors";
 					if (isBomb) {
 						cls += " bg-red-500 text-white";
 					} else if (outOfRange) {
@@ -129,7 +132,7 @@ const Game = () => {
 				})}
 			</div>
 
-			<div className="flex gap-10px justify-center mt-10px">
+			<div className="flex flex-wrap gap-10px justify-center mt-5px">
 				<button
 					type="button"
 					onClick={initGame}

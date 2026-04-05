@@ -259,13 +259,14 @@ const SelectPlayer = () => {
 			</DragDropProvider>
 			<button
 				type="button"
-				disabled={players.length === 0}
+				disabled={players.length < 2}
+				title={players.length < 2 ? "至少需要 2 名玩家" : undefined}
 				className="m-auto block mt-30px px-30px py-10px rounded-full bg-red-500 text-white font-bold text-lg shadow-lg hover:bg-red-600 hover:shadow-xl cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-500 disabled:hover:shadow-lg"
 				onClick={() => {
 					setScene(Scene.GAME);
 				}}
 			>
-				开始游戏
+				{players.length < 2 ? `至少需要 2 名玩家(${players.length}/2)` : "开始游戏"}
 			</button>
 			{manageOpen && (
 				<ManagePanel
